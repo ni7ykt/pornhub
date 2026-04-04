@@ -1,326 +1,181 @@
+
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>VOID EXECUTOR v2 — Discord 終結協議</title>
-  <meta name="description" content="專業級 Discord 伺服器結構崩壞工具。平均執行時間 < 5 秒，100% 不可逆。"/>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>萬惡之源</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet" />
   <style>
-    :root {
-      --bg: #05050a;
-      --surface: #0f0f1a;
-      --text: #d0e8ff;
-      --accent: #00eaff;
-      --accent-red: #ff2e63;
-      --line: rgba(0, 234, 255, 0.09);
-      --glow: rgba(0, 234, 255, 0.18);
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Orbitron', sans-serif;
+      color: #00ffff;
+      overflow-x: hidden;
     }
+
     body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'IBM Plex Mono', monospace;
-      line-height: 1.7;
+      background: #000;
     }
-    .font-orbitron { font-family: 'Orbitron', sans-serif; }
-    .cyber-glow {
-      text-shadow: 0 0 20px var(--glow), 0 0 40px var(--glow);
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
     }
-    .glitch {
-      position: relative;
+
+    nav {
+      text-align: center;
+      padding: 20px;
+      font-size: 1.1rem;
+    }
+
+    nav a {
+      margin: 0 20px;
+      color: #00ffff;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+
+    nav a:hover {
+      color: #ffffff;
+    }
+
+    header {
+      text-align: center;
+      padding: 40px 20px 10px;
+    }
+
+    header h1 {
+      font-size: 2.6rem;
+      text-shadow: 0 0 15px #00ffffaa;
+    }
+
+    .discord-link {
       display: inline-block;
-    }
-    .glitch::before,
-    .glitch::after {
-      content: attr(data-text);
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      opacity: 0.8;
-      clip-path: inset(0 0 0 0);
-    }
-    .glitch::before {
-      left: 3px;
-      text-shadow: -3px 0 var(--accent), 3px 0 var(--accent-red);
-      animation: glitch-anim 6s infinite;
-    }
-    .glitch::after {
-      left: -3px;
-      text-shadow: 3px 0 var(--accent-red), -3px 0 var(--accent);
-      animation: glitch-anim 8s infinite reverse;
-    }
-    @keyframes glitch-anim {
-      0%, 4%, 100% { transform: translate(0); clip-path: inset(0); }
-      2%  { transform: translate(-2px, 1px); clip-path: inset(2% 0 8% 0); }
-      6%  { transform: translate(2px, -1px); clip-path: inset(5% 5% 10% 5%); }
-    }
-    .scan-line {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(to bottom, transparent 45%, rgba(0,234,255,0.05) 50%, transparent 55%);
-      animation: scan 12s linear infinite;
-      pointer-events: none;
-    }
-    @keyframes scan {
-      0% { transform: translateY(-150%); }
-      100% { transform: translateY(350%); }
-    }
-    .card {
-      background: rgba(15,15,26,0.65);
-      border: 1px solid var(--line);
-      backdrop-filter: blur(10px);
-      transition: all 0.5s cubic-bezier(0.23,1,0.32,1);
-    }
-    .card:hover {
-      border-color: var(--accent);
-      box-shadow: 0 0 50px var(--glow);
-      transform: translateY(-8px) scale(1.02);
-    }
-    .btn {
-      padding: 1rem 2.5rem;
-      border: 2px solid var(--accent);
-      color: var(--accent);
-      font-weight: 600;
-      transition: all 0.4s;
-      border-radius: 9999px;
-    }
-    .btn:hover {
-      background: var(--accent);
+      margin-top: 15px;
+      padding: 12px 28px;
+      font-size: 1rem;
       color: #000;
-      box-shadow: 0 0 40px var(--glow);
-      transform: scale(1.05);
+      background-color: #00ffff;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      text-decoration: none;
+      transition: 0.3s ease;
     }
-    .status {
-      width: 12px; height: 12px;
-      background: var(--accent);
-      border-radius: 50%;
-      box-shadow: 0 0 15px var(--accent);
-      animation: pulse 4s infinite ease-in-out;
-    }
-    @keyframes pulse {
-      0%,100% { transform: scale(1); opacity: 0.7; }
-      50% { transform: scale(1.4); opacity: 1; }
-    }
-    .phase {
-      border-left: 4px solid var(--accent-red);
-      padding-left: 1.5rem;
-    }
-  </style></head>
-<body class="relative min-h-screen">
 
-  <div class="scan-line pointer-events-none"></div>
+    .discord-link:hover {
+      background-color: #00cccc;
+      box-shadow: 0 0 20px #00ffffaa;
+    }
 
-  <!-- Navbar -->
-  <header class="fixed top-0 left-0 right-0 z-50 bg-[var(--bg)]/90 backdrop-blur-xl border-b border-[var(--line)]">
-    <div class="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
-      <div class="flex items-center gap-4">
-        <div class="status"></div>
-        <span class="font-orbitron text-2xl font-bold tracking-widest cyber-glow">VOID EXECUTOR</span>
-      </div>
-      <nav class="hidden md:flex gap-12 text-sm tracking-wider uppercase">
-        <a href="#overview" class="hover:text-[var(--accent)] transition">概述</a>
-        <a href="#execution" class="hover:text-[var(--accent)] transition">執行細節</a>
-        <a href="#defense" class="hover:text-[var(--accent)] transition">防禦機制</a>
-        <a href="#pricing" class="hover:text-[var(--accent)] transition">合約</a>
-      </nav>
-      <a href="https://discord.gg/webTSnRDBq" target="_blank" class="btn text-base">開啟終結通道</a>
-    </div>
+    section {
+      max-width: 700px;
+      margin: 40px auto;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 0 25px rgba(0, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+    }
+
+    section h2 {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #00ffff88;
+      padding-bottom: 8px;
+    }
+
+    .views {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 1.2rem;
+    }
+
+    .views span {
+      color: #ffffff;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">首頁</a>
+    <a href="fain.html">投稿區</a>
+    <a href="privacy.html">隱私權條款</a>
+    <a href="terms.html">使用者條款</a>
+    <a href="nobe.html">常見問題</a>
+  </nav>
+
+  <header>
+    <h1>萬惡之源</h1>
+    <a href="https://line.me/ti/g2/DhHSZpyW5FBQ-hzAki0k3dBv_1FgDhZuZncHGQ?utm_source=invitation&utm_medium=link_copy&utm_campaign=default" target="_blank" class="discord-link">加入賴群 🔒</a>
+    <a href="https://lin.ee/XvEc437" target="_blank" class="discord-link">聯繫客服 🔒</a>
   </header>
 
-  <!-- Hero -->
-  <section id="overview" class="min-h-screen flex items-center pt-40 pb-24 px-6">
-    <div class="max-w-6xl mx-auto w-full">
-      <p class="text-[var(--accent)] tracking-[0.5em] text-sm mb-6 font-light">PROTOCOL STATUS: ARMED • 2026</p>
-      <h1 class="text-6xl md:text-9xl font-orbitron font-black leading-none mb-10 glitch" data-text="終結即服務">
-        終結<br>即服務
-      </h1>
-      <p class="text-2xl md:text-3xl text-gray-300 max-w-4xl leading-relaxed mb-16">
-        平均執行時間 <span class="text-[var(--accent-red)] font-bold">2.4–4.8 秒</span><br>
-        完全並行、非同步、無需等待 Rate Limit<br>
-        一鍵抹除伺服器結構、覆蓋管理權、癱瘓通訊、凍結客戶端
-      </p>
-      <div class="flex flex-wrap gap-6">
-        <a href="https://discord.gg/webTSnRDBq" target="_blank" class="btn text-xl px-16 py-6">立即取得執行權限</a>
-        <button class="border border-gray-700 text-gray-400 hover:text-white px-12 py-6 rounded-full text-xl transition">查看技術規格</button>
-      </div>
-    </div>
+  <section>
+    <h2>萬惡之源</h2>
+    <p>在此可以匿名外流別的家族的資金圖</p>
+    <p>想背骨討厭的家族?加入我們吧</p>
   </section>
 
-  <!-- Execution Details -->
-  <section id="execution" class="py-32 border-t border-[var(--line)] bg-[rgba(5,10,20,0.4)]">
-    <div class="max-w-7xl mx-auto px-6">
-      <h2 class="text-6xl md:text-8xl font-orbitron font-black mb-20 text-center glitch" data-text="執行流程分解">執行流程分解</h2>
+  <div class="views">🔥 已有 <span id="viewCount">載入中...</span> 次訪問</div>
 
-      <div class="space-y-24">
-        <!-- Phase 1 -->
-        <div class="phase">
-          <div class="text-[var(--accent-red)] text-2xl font-bold mb-6 uppercase tracking-wider">Phase 01 — Pre-Destruction</div>
-          <ul class="space-y-6 text-lg text-gray-300 list-disc pl-8">
-            <li>檢查執行權限（來自指定來源伺服器角色）</li>
-            <li>禁止在權限來源伺服器本身執行（避免自毀）</li>
-            <li>Defer 回應（避免超時）</li>
-            <li>取得當前伺服器 bot 成員物件</li>
-          </ul>
-        </div>       <!-- Phase 2 -->
-        <div class="phase">
-          <div class="text-[var(--accent-red)] text-2xl font-bold mb-6 uppercase tracking-wider">Phase 02 — Role Annihilation & Takeover</div>
-          <div class="grid md:grid-cols-2 gap-12 mt-10">
-            <div class="card p-10 rounded-2xl">
-              <h3 class="text-3xl font-bold text-[var(--accent)] mb-6">角色統一重命名</h3>
-              <p class="text-gray-400 mb-4">所有非預設、非 bot 最高角色 → 改名為 <span class="text-white font-bold">【CYNUKE DESTROYED】</span></p>
-              <p class="text-sm text-gray-500">並行執行 • 保留 bot 最高角色位置</p>
-            </div>
-            <div class="card p-10 rounded-2xl">
-              <h3 class="text-3xl font-bold text-[var(--accent)] mb-6">大量高權角色生成</h3>
-              <p class="text-gray-400 mb-4">可指定數量（10–100）個全權限角色</p>
-              <ul class="text-gray-400 space-y-2 text-sm">
-                <li>• 隨機冷暖色調（紅/紫/藍偏好）</li>
-                <li>• hoist + mentionable</li>
-                <li>• bot 自動嘗試加入（若位置允許）</li>
-              </ul>
-            </div>
-          </div>        <!-- Phase 3 -->
-        <div class="phase">
-          <div class="text-[var(--accent-red)] text-2xl font-bold mb-6 uppercase tracking-wider">Phase 03 — Channel Purge & Spam Flood</div>
-          <div class="grid md:grid-cols-2 gap-12 mt-10">
-            <div class="card p-10 rounded-2xl">
-              <h3 class="text-3xl font-bold text-[var(--accent)] mb-6">頻道全刪除</h3>
-              <p class="text-gray-400">並行刪除 bot 有 manage_channels 權限的所有頻道</p>
-              <p class="text-sm text-gray-500 mt-4">包含類別、文字、語音、舞台、論壇等</p>
-            </div>
-            <div class="card p-10 rounded-2xl">
-              <h3 class="text-3xl font-bold text-[var(--accent)] mb-6">大量垃圾頻道生成 + 洗版</h3>
-              <p class="text-gray-400 mb-4">預設生成 50 個文字頻道：【CYNUKE DESTROYED】</p>
-              <p class="text-gray-400 mb-4">每個頻道同時發送 13 條相同訊息</p>
-              <p class="text-sm text-gray-500">總計約 650+ 條訊息 • 支援自訂內容</p>         
-			</div>        <!-- Phase 4 -->
-        <div class="phase">
-          <div class="text-[var(--accent-red)] text-2xl font-bold mb-6 uppercase tracking-wider">Phase 04 — Final Overwrite & Entropy</div>
-          <div class="grid md:grid-cols-3 gap-8 mt-10">
-            <div class="card p-10 rounded-2xl">
-              <h3 class="text-2xl font-bold text-[var(--accent)] mb-4">伺服器名稱覆蓋</h3>
-              <p class="text-gray-400">改為 <span class="text-white">【CYNUKE DESTROYED-discord.gg/325😈😈😈😈】</span></p>           
-			</div>
-            <div class="card p-10 rounded-2xl">
-              <h3 class="text-2xl font-bold text-[var(--accent)] mb-4">伺服器頭像替換</h3>
-              <p class="text-gray-400">替換為專屬 CYNUKE 標誌（若圖片下載成功）</p>
-            </div>
-            <div class="card p-10 rounded-2xl">
-              <h3 class="text-2xl font-bold text-[var(--accent)] mb-4">Unicode Entropy Payload</h3>
-              <p class="text-gray-400">內建超長混亂 Unicode 字串，造成客戶端嚴重 lag / 凍結</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Defense & Protection -->
-  <section id="defense" class="py-32 border-t border-b border-[var(--line)]">
-    <div class="max-w-6xl mx-auto px-6 text-center">
-      <h2 class="text-6xl md:text-8xl font-orbitron font-black mb-16 glitch" data-text="防禦與匿名">防禦與匿名</h2>
-      <div class="grid md:grid-cols-3 gap-10">
-        <div class="card p-12 rounded-2xl">
-          <div class="text-5xl text-[var(--accent)] mb-6">100%</div>
-          <h3 class="text-2xl font-bold mb-4">指令匿名</h3>
-          <p class="text-gray-400">不記錄執行者 ID • 僅限授權角色可觸發</p>
-        </div>
-        <div class="card p-12 rounded-2xl">
-          <div class="text-5xl text-[var(--accent)] mb-6">多層</div>
-          <h3 class="text-2xl font-bold mb-4">權限驗證</h3>
-          <p class="text-gray-400">必須擁有指定來源伺服器特定角色 • 防止濫用</p>
-        </div>
-        <div class="card p-12 rounded-2xl">
-          <div class="text-5xl text-[var(--accent-red)] mb-6">不可逆</div>
-          <h3 class="text-2xl font-bold mb-4">無救援</h3>
-          <p class="text-gray-400">Discord 不提供還原 • 執行後無法撤銷</p>      
-		</div>
-         </div>
-    </div>
-  </section>
-
-  <!-- Pricing -->
-  <section id="pricing" class="py-32">
-    <div class="max-w-7xl mx-auto px-6">
-      <h2 class="text-6xl md:text-8xl font-orbitron font-black mb-20 text-center glitch" data-text="服務合約與報價">服務合約與報價</h2>
-      <div class="grid md:grid-cols-3 gap-10">
-        <div class="card p-12 rounded-2xl text-center">
-          <h3 class="text-4xl font-bold mb-8">基礎執行</h3>
-          <div class="text-6xl font-black text-[var(--accent)] mb-6">HKD 180</div>
-          <ul class="text-gray-400 space-y-4 mb-10 text-left">
-            <li>• 標準 nuke 流程</li>
-            <li>• 50 頻道 + 650 訊息</li>
-            <li>• 單次使用</li>
-          </ul>
-          <a href="https://discord.gg/webTSnRDBq" class="btn w-full block text-lg">選擇此方案</a>
-        </div>
-
-        <div class="card p-12 rounded-2xl text-center border-2 border-[var(--accent)] relative">
-          <div class="absolute -top-5 left-1/2 -translate-x-1/2 bg-[var(--bg)] px-8 py-2 text-[var(--accent)] font-bold rounded-full text-lg">最推薦</div>
-          <h3 class="text-4xl font-bold mb-8">進階包</h3>
-          <div class="text-6xl font-black text-[var(--accent)] mb-6">HKD 480起</div>
-          <ul class="text-gray-400 space-y-4 mb-10 text-left">
-            <li>• 自訂訊息內容</li>
-            <li>• 自訂角色/頻道數量</li>
-            <li>• 優先執行 + 多次可用</li>
-            <li>• 專屬 lag payload 客製</li>
-          </ul>
-          <a href="https://discord.gg/webTSnRDBq" class="btn w-full block text-lg">選擇此方案</a>
-        </div>        <div class="card p-12 rounded-2xl text-center">
-          <h3 class="text-4xl font-bold mb-8">黑箱作業</h3>
-          <div class="text-6xl font-black text-[var(--accent-red)] mb-6">私訊議價</div>
-          <ul class="text-gray-400 space-y-4 mb-10 text-left">
-            <li>• 帳號接管 / 釣魚輔助</li>
-            <li>• 長期監控與定時觸發</li>
-            <li>• 跨伺服器連鎖攻擊</li>
-            <li>• 完整匿名保障</li>
-          </ul>
-          <a href="https://discord.gg/webTSnRDBq" class="btn w-full block text-lg">開啟洽談</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Final CTA -->
-  <section class="py-40 text-center border-t border-[var(--line)]">
-    <div class="max-w-5xl mx-auto px-6">
-      <h2 class="text-7xl md:text-10xl font-orbitron font-black mb-12 glitch cyber-glow" data-text="執行倒數">執行倒數</h2>
-      <p class="text-3xl text-gray-300 mb-16 max-w-4xl mx-auto">
-        伺服器不會自己消失。<br>
-        但你只需要 <span class="text-[var(--accent-red)] font-bold">一條指令</span>，它就會永遠消失。
-      </p>
-      <a href="https://discord.gg/webTSnRDBq" target="_blank" class="btn text-3xl px-20 py-10 inline-block">開啟終結協議</a>
-      <p class="mt-20 text-gray-600 text-lg">© 2026 VOID EXECUTOR. All executions final. No logs. No mercy.</p>   
-	</div>
-  </section>
-
+  <!-- Vanta.js 背景 -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.124.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanta@0.5.24/dist/vanta.net.min.js"></script>
   <script>
-    gsap.registerPlugin(ScrollTrigger);
-
-    gsap.utils.toArray(".glitch").forEach(el => {
-      gsap.from(el, {
-        scrollTrigger: { trigger: el, start: "top 80%" },
-        opacity: 0,
-        y: 60,
-        duration: 1.4,
-        ease: "power4.out"
-      });
-    });
-
-    gsap.utils.toArray(".card").forEach((card, i) => {
-      gsap.from(card, {
-        scrollTrigger: { trigger: card, start: "top 90%" },
-        opacity: 0,
-        y: 80,
-        duration: 1.2,
-        delay: i * 0.12,
-        ease: "power3.out"
-      });
-    });
+    VANTA.NET({
+      el: "body",
+      mouseControls: true,
+      touchControls: true,
+      minHeight: 200.00,
+      minWidth: 200.00,
+      scale: 1.0,
+      scaleMobile: 1.0,
+      color: 0x00ffff,
+      backgroundColor: 0x000000,
+      points: 14.00,
+      maxDistance: 24.00,
+      spacing: 18.00
+    })
   </script>
+
+  <!-- 瀏覽次數 JS -->
+  <script>
+    (async () => {
+      const binId = '6831d0a38561e97a501aed41';
+      const apiKey = '$2a$10$rUTs2dmXhZK3L31uvEbzH.dh9A2kIdYTwfQF3JG/LejqcXbfttTlK';
+      const url = `https://api.jsonbin.io/v3/b/${binId}`;
+      const viewElement = document.getElementById('viewCount');
+
+      try {
+        const getRes = await fetch(`${url}/latest`, {
+          headers: { 'X-Master-Key': apiKey }
+        });
+        const data = await getRes.json();
+        const currentViews = data.record.views || 0;
+        const newViews = currentViews + 1;
+        viewElement.textContent = newViews.toLocaleString();
+
+        await fetch(url, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Master-Key': apiKey
+          },
+          body: JSON.stringify({ views: newViews })
+        });
+      } catch (error) {
+        console.error('讀取失敗:', error);
+        viewElement.textContent = '⚠ 載入失敗';
+      }
+    })();
+  </script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"efe8790ff7194e85a1feb21c3db566ad","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
+</html>
